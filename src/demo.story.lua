@@ -8,8 +8,8 @@ return function (coreGui)
 		Position = UDim2.fromScale(0.5,0.5),
 		AnchorPoint = Vector2.new(0.5,0.5),
 		Parent = coreGui,
-		EnableSound = SoundService.UI.Button.Confirm["1"]:Clone(),
-		DisableSound = SoundService.UI.Button.Cancel:Clone(),
+		EnableSound = SoundService.All.UI.Button.Confirm["1"]:Clone(),
+		DisableSound = SoundService.All.UI.Button.Cancel:Clone(),
 	}
 	local object = module.new(demo)
 	return function()

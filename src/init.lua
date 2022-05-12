@@ -4,7 +4,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local packages = script.Parent
 
-local Fusion = require(packages:WaitForChild("coldfusion"))
 local Isotope = require(packages:WaitForChild("isotope"))
 local Signal = require(packages:WaitForChild("signal"))
 
@@ -18,24 +17,24 @@ end
 
 function GuiObject.new(config)
 	local self = setmetatable(Isotope.new(config), GuiObject)
-	self.Name = Isotope.import(config.Name, script.Name)
-	self.ClassName = Fusion.Computed(function() return script.Name end)
-	self.Scale = Isotope.import(config.Scale, 1)
-	self.TextColor3 = Isotope.import(config.TextColor3, Color3.new(1,1,1))
-	self.BorderColor3 = Isotope.import(config.BorderColor3, Color3.fromHSV(0,0,0.4))
-	self.Color3 = Isotope.import(config.Color3, Color3.fromHSV(0.6,1,1))
-	self.BubbleColor3 = Isotope.import(config.BubbleColor3, Color3.fromHSV(0,0,0.7))
-	self.Value = Isotope.import(config.Value, false)
-	self.EnableSound = Isotope.import(config.EnableSound):CleanUp()
-	self.DisableSound = Isotope.import(config.DisableSound):CleanUp()
-	self.Padding = Fusion.Computed(self.Scale, function(scale)
+	self.Name = self:Import(config.Name, script.Name)
+	self.ClassName = self._Fuse.Computed(function() return script.Name end)
+	self.Scale = self:Import(config.Scale, 1)
+	self.TextColor3 = self:Import(config.TextColor3, Color3.new(1,1,1))
+	self.BorderColor3 = self:Import(config.BorderColor3, Color3.fromHSV(0,0,0.4))
+	self.Color3 = self:Import(config.Color3, Color3.fromHSV(0.6,1,1))
+	self.BubbleColor3 = self:Import(config.BubbleColor3, Color3.fromHSV(0,0,0.7))
+	self.Value = self:Import(config.Value, false)
+	self.EnableSound = self:Import(config.EnableSound):CleanUp()
+	self.DisableSound = self:Import(config.DisableSound):CleanUp()
+	self.Padding = self._Fuse.Computed(self.Scale, function(scale)
 		return math.round(6 * scale)
 	end)
-	self.Width = Fusion.Computed(self.Scale, function(scale)
+	self.Width = self._Fuse.Computed(self.Scale, function(scale)
 		return math.round(scale * 20)
 	end)
 	self.Activated = Signal.new()
-	self.BubbleEnabled = Fusion.Value(false)
+	self.BubbleEnabled = self._Fuse.Value(false)
 	self._Maid:GiveTask(self.Activated:Connect(function()
 		self.Value:Set(not self.Value:Get())
 		if self.Value:Get() == true then
@@ -60,12 +59,12 @@ function GuiObject.new(config)
 
 	local parameters = {
 		Name = self.Name,
-		Size = Fusion.Computed(self.Width, function(width)
+		Size = self._Fuse.Computed(self.Width, function(width)
 			return UDim2.fromOffset(width * 2, width * 2)
 		end),
 		BackgroundTransparency = 1,
-		[Fusion.Children] = {
-			Fusion.new "ImageButton" {
+		[self._Fuse.Children] = {
+			self._Fuse.new "ImageButton" {
 				Name = "Button",
 				ZIndex = 3,
 				BackgroundTransparency = 1,
@@ -73,39 +72,39 @@ function GuiObject.new(config)
 				Position = UDim2.fromScale(0.5,0.5),
 				Size = UDim2.fromScale(1,1),
 				AnchorPoint = Vector2.new(0.5,0.5),
-				[Fusion.Event "Activated"] = function()
+				[self._Fuse.Event "Activated"] = function()
 					self.Activated:Fire()
 				end
 			},
-			Fusion.new "Frame" {
+			self._Fuse.new "Frame" {
 				Name = "Frame",
 				ZIndex = 2,
 				Position = UDim2.fromScale(0.5,0.5),
 				AnchorPoint = Vector2.new(0.5,0.5),
 				BackgroundColor3 = self.Color3,
 				BackgroundTransparency = 0.999,
-				Size = Fusion.Computed(self.Width, self.Padding, function(width, padding)
+				Size = self._Fuse.Computed(self.Width, self.Padding, function(width, padding)
 					return UDim2.fromOffset(width-padding, width-padding)
 				end),
 				BorderSizePixel = 0,
-				[Fusion.Children] = {
-					Fusion.new "Frame" {
+				[self._Fuse.Children] = {
+					self._Fuse.new "Frame" {
 						Name = "Fill",
-						Size = Fusion.Computed(self.Width, self.Padding, function(width, padding)
+						Size = self._Fuse.Computed(self.Width, self.Padding, function(width, padding)
 							local w = math.round(width - padding*2)
 							return UDim2.fromOffset(w,w)
 						end),
 						BackgroundColor3 = self.Color3,
-						BackgroundTransparency = Fusion.Computed(self.Value, function(val)
+						BackgroundTransparency = self._Fuse.Computed(self.Value, function(val)
 							if val then
 								return 0
 							else
 								return 1
 							end
 						end):Tween(),
-						[Fusion.Children] = {
-							Fusion.new "UICorner" {
-								CornerRadius = Fusion.Computed(self.Padding, function(padding)
+						[self._Fuse.Children] = {
+							self._Fuse.new "UICorner" {
+								CornerRadius = self._Fuse.Computed(self.Padding, function(padding)
 									return UDim.new(1,0)
 								end)
 							},
@@ -113,18 +112,18 @@ function GuiObject.new(config)
 						Position = UDim2.fromScale(0.5,0.5),
 						AnchorPoint = Vector2.new(0.5,0.5),
 					},
-					Fusion.new "UICorner" {
-						CornerRadius = Fusion.Computed(self.Padding, function(padding)
+					self._Fuse.new "UICorner" {
+						CornerRadius = self._Fuse.Computed(self.Padding, function(padding)
 							return UDim.new(1,0)
 						end)
 					},
-					Fusion.new "UIStroke" {
+					self._Fuse.new "UIStroke" {
 						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-						Thickness = Fusion.Computed(self.Padding, function(padding)
+						Thickness = self._Fuse.Computed(self.Padding, function(padding)
 							return math.round(padding*0.25)
 						end),
 						Transparency = 0,
-						Color = Fusion.Computed(
+						Color = self._Fuse.Computed(
 							self.Value,
 							self.BorderColor3,
 							self.Color3, function(val, border, background)
@@ -133,29 +132,29 @@ function GuiObject.new(config)
 					}
 				}
 			},
-			Fusion.new "Frame" {
+			self._Fuse.new "Frame" {
 				Name = "Bubble",
 				Position = UDim2.fromScale(0.5,0.5),
 				AnchorPoint = Vector2.new(0.5,0.5),
 				BorderSizePixel = 0,
 				ZIndex = 1,
 				BackgroundColor3 = self.BubbleColor3,
-				Size = Fusion.Computed(self.BubbleEnabled, self.Value, function(bVal, val)
+				Size = self._Fuse.Computed(self.BubbleEnabled, self.Value, function(bVal, val)
 					if val then
 						return UDim2.fromScale(1, 1)
 					else
 						return UDim2.fromScale(0, 0)
 					end
 				end):Tween(),
-				BackgroundTransparency = Fusion.Computed(self.BubbleEnabled, self.Value, function(bVal, val)
+				BackgroundTransparency = self._Fuse.Computed(self.BubbleEnabled, self.Value, function(bVal, val)
 					if bVal == false then
 						return 1
 					else
 						return 0
 					end
 				end):Tween(0.5),
-				[Fusion.Children] = {
-					Fusion.new "UICorner" {
+				[self._Fuse.Children] = {
+					self._Fuse.new "UICorner" {
 						CornerRadius = UDim.new(0.5,0),
 					},
 				}
@@ -168,9 +167,9 @@ function GuiObject.new(config)
 		end
 	end
 	-- print("Parameters", parameters, self)
-	self.Instance = Fusion.new("Frame")(parameters)
+	self.Instance = self._Fuse.new("Frame")(parameters)
 	self:Construct()
-	return self
+	return self.Instance
 end
 
 return GuiObject
